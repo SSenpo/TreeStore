@@ -22,37 +22,30 @@ class TreeStore:
 			if parent is None or key is None:
 				raise ValueError('\033[33mItems list miss [id] or [parent]\033[0m')
 			self.it_dict.setdefault(key, i)
+			childrens_list =[]
+			for x in self.items:
+				if x.get('parent') == key:
+					childrens_list.append(x)
 			self.it_dict.setdefault('Parent_{}'.format(key), parent)
-			self.it_dict.setdefault('Children_{}'.format(key), [])
-			if parent != 'root':
-				self.it_dict.setdefault('Children_{}'.format(parent), []).append(key)
+			self.it_dict.setdefault('Children_{}'.format(key), childrens_list)
 
 	# Return all values
-	def _getAll(self) -> None:
-		print_custom("Get ALL method:", 'yellow')
-		print_custom(self.items, 'white')
+	def _getAll(self) -> list:
+		return self.items
 
 	# Return value by ID
-	def _getItem(self, it_number: int) -> None:
+	def _getItem(self, it_number: int) -> list:
 		result_item = []
 		result_item.append(self.it_dict.get(it_number))
-		print_custom("Get Items method:", 'yellow')
-		print_custom(result_item, 'white')
+		return result_item
 	
 	# Return all Childrens
-	def _getChildren(self, parent_num: int) -> None:
-		result_children = []
-		check_parent = self.it_dict.get('Children_{}'.format(parent_num))
-		if check_parent is None:
-			del check_parent
-		else:
-			for i in self.it_dict.get('Children_{}'.format(parent_num)):
-				result_children.append(self.it_dict.get(i))
-		print_custom("Get Children method:", 'yellow')
-		print_custom(result_children, 'white')
+	def _getChildren(self, parent_num: int) -> list:
+		result_children = self.it_dict.get(f'Children_{parent_num}')
+		return result_children
 
 	# Return all Parents
-	def _getAllParents(self, child_num: int) -> None:
+	def _getAllParents(self, child_num: int) -> list:
 		result_parents = []
 		while True:
 			parent = self.it_dict.get('Parent_{}'.format(child_num))
@@ -61,8 +54,7 @@ class TreeStore:
 			else:
 				result_parents.append(self.it_dict.get(parent))
 				child_num = parent
-		print_custom("Get ALL Parents method:", 'yellow')
-		print_custom(result_parents, 'white')
+		return result_parents
 	
 	# Destructor call
 	def __del__(self):
@@ -71,10 +63,10 @@ class TreeStore:
 
 # Print Custom function
 def print_custom(text, color):
-	check_color = ['yellow', 'white', 'green', 'red']
+	check_color = ['yellow', 'white', 'green', 'red', 'test1', 'test2']
 	if color not in check_color:
 		raise ValueError('Invalid [color] value')
-	if color == 'yellow':
+	elif color == 'yellow':
 		print("\n\033[33m\033[1m{}" .format(text))
 		print('------------------------------'\
 			'------------------------------\033[0m')
@@ -92,3 +84,8 @@ def print_custom(text, color):
 		print('\n\033[31m\033[1m----------------------------------------'\
 			'--------------------')
 		print("{}\033[0m" .format(text))
+	# **---------------------------------**
+	elif color == 'test1':
+		print(f'\033[32m\033[1mOptimized_TreeStore: {text:.10f}\033[0m')
+	elif color == 'test2':
+		print(f'\033[34m\033[1mNot_Optimized_TreeStore: {text:.10f}\033[0m')
